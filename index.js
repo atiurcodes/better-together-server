@@ -31,7 +31,28 @@ app.get('/', (req, res) => {
 });
 
 app.get('/upcoming-event', async (req, res) => {
-    const allEvent = await eventCollection.find().toArray();
+    const today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Dhaka",
+    }).format(new Date());
+
+    const allEvent = await eventCollection.find({
+        eventDate: {
+            $gte: today
+        }
+    }).sort({ eventDate: 1 }).toArray();
+    res.send(allEvent);
+})
+
+app.get('/recent-upcoming-event', async (req, res) => {
+    const today = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Dhaka",
+    }).format(new Date());
+
+    const allEvent = await eventCollection.find({
+        eventDate: {
+            $gte: today
+        }
+    }).sort({ eventDate: 1 }).limit(6).toArray();
     res.send(allEvent);
 })
 
