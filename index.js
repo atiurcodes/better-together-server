@@ -30,6 +30,11 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+app.get('/upcoming-event', async (req, res) => {
+    const allEvent = await eventCollection.find().toArray();
+    res.send(allEvent);
+})
+
 app.post('/event/add-event', async (req, res) => {
     const data = req.body;
     const result = await eventCollection.insertOne(data);
