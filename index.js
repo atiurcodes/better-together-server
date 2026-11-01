@@ -75,6 +75,15 @@ app.get('/my-event/:email', async (req, res) => {
     res.send(myEvent);
 })
 
+app.patch('/my-event/edit/:id', async (req, res) => {
+    const { id } = req.params;
+    const updatedData = req.body;
+    const result = await eventCollection.updateOne({ _id: new ObjectId(id) }, {
+        $set: updatedData
+    })
+    res.send(result);
+})
+
 app.get('/joined-events/:email', async (req, res) => {
     const { email } = req.params;
     const result = await joinedEventCollection.find({ userEmail: email }).toArray();
@@ -83,9 +92,20 @@ app.get('/joined-events/:email', async (req, res) => {
 
 app.post('/join-event', async (req, res) => {
     const data = req.body;
+    const alreadyJoined = await joinedEventCollection.findOne({
+        eventId: data.eventID,
+        userEmail: data.userEmail
+    });
+
+    if (alreadyJoined) {
+        return res.status(409).send({
+            message: "Already joined this event"
+        });
+    }
     const result = await joinedEventCollection.insertOne(data);
     res.send(result);
 })
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
