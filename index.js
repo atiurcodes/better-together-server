@@ -75,6 +75,12 @@ app.get('/my-event/:email', async (req, res) => {
     res.send(myEvent);
 })
 
+app.get('/joined-events/:email', async (req, res) => {
+    const { email } = req.params;
+    const result = await joinedEventCollection.find({ userEmail: email }).toArray();
+    res.send(result)
+})
+
 app.post('/join-event', async (req, res) => {
     const data = req.body;
     const result = await joinedEventCollection.insertOne(data);
