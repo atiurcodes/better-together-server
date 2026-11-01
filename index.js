@@ -84,6 +84,12 @@ app.patch('/my-event/edit/:id', async (req, res) => {
     res.send(result);
 })
 
+app.delete('/delete-event/:id', async (req, res) => {
+    const { id } = req.params;
+    const result = await eventCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send(result);
+})
+
 app.get('/joined-events/:email', async (req, res) => {
     const { email } = req.params;
     const result = await joinedEventCollection.find({ userEmail: email }).toArray();
