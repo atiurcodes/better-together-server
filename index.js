@@ -25,6 +25,7 @@ export async function connectToMongoDB() {
 const mongoClient = await connectToMongoDB();
 const db = mongoClient.db('eventManagement');
 const eventCollection = db.collection('events');
+const joinedEventCollection = db.collection('Joined');
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -72,6 +73,12 @@ app.get('/my-event/:email', async (req, res) => {
     const { email } = req.params;
     const myEvent = await eventCollection.find({ organizerEmail: email }).toArray();
     res.send(myEvent);
+})
+
+app.post('/join-event', async (req, res) => {
+    const data = req.body;
+    const result = await joinedEventCollection.insertOne(data);
+    res.send(result);
 })
 
 app.listen(port, () => {
