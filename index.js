@@ -68,6 +68,12 @@ app.post('/event/add-event', async (req, res) => {
     res.send(result);
 })
 
+app.get('/my-event/:email', async (req, res) => {
+    const { email } = req.params;
+    const myEvent = await eventCollection.find({ organizerEmail: email }).toArray();
+    res.send(myEvent);
+})
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
