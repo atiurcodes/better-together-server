@@ -38,7 +38,7 @@ const verifyToken = async (req, res, next) => {
         return res.status(401).send({ msg: 'Unauthorized!1' });
     }
 
-    const JWKS = createRemoteJWKSet(new URL('http://localhost:3000/api/auth/jwks'));
+    const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`));
     try {
 
         const { payload } = await jwtVerify(token, JWKS);
@@ -135,6 +135,12 @@ app.post('/join-event', verifyToken, async (req, res) => {
 })
 
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
+// Local development server
+if (process.env.NODE_ENV !== "production") {
+    app.listen(port, () => {
+        console.log(`Example app listening on port ${port}`);
+    });
+}
+
+// Export Express app for Vercel
+export default app;
