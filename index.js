@@ -93,9 +93,17 @@ app.post('/event/add-event', verifyToken, async (req, res) => {
 
 app.get('/my-event/:email', verifyToken, async (req, res) => {
     const { email } = req.params;
-    const myEvent = await eventCollection.find({ organizerEmail: email }).toArray();
+    const myEvent = await eventCollection.find({ organizerEmail: email }).sort({ eventDate: -1 }).toArray();
     res.send(myEvent);
 })
+
+app.get('/manage-event/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const manageEventDetails = await eventCollection.findOne({ _id: new ObjectId(id) });
+
+    res.send(manageEventDetails);
+});
 
 app.patch('/my-event/edit/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
@@ -109,14 +117,27 @@ app.patch('/my-event/edit/:id', verifyToken, async (req, res) => {
 app.delete('/delete-event/:id', verifyToken, async (req, res) => {
     const { id } = req.params;
     const result = await eventCollection.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount > 0) {
+        await joinedEventCollection.deleteMany({
+            eventId: id
+        });
+    }
     res.send(result);
 })
 
 app.get('/joined-events/:email', verifyToken, async (req, res) => {
     const { email } = req.params;
-    const result = await joinedEventCollection.find({ userEmail: email }).toArray();
+    const result = await joinedEventCollection.find({ userEmail: email }).sort({ eventDate: 1 }).toArray();
     res.send(result)
 })
+
+app.get('/joined-event/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const joinedEventDetails = await joinedEventCollection.findOne({ _id: new ObjectId(id) });
+
+    res.send(joinedEventDetails);
+});
 
 app.post('/join-event', verifyToken, async (req, res) => {
     const data = req.body;
