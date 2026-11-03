@@ -50,7 +50,7 @@ const verifyToken = async (req, res, next) => {
 }
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+    res.send('Vercel server is running!');
 });
 
 app.get('/upcoming-event', async (req, res) => {
