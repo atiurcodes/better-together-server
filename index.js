@@ -142,7 +142,7 @@ app.get('/joined-event/:id', async (req, res) => {
 app.post('/join-event', verifyToken, async (req, res) => {
     const data = req.body;
     const alreadyJoined = await joinedEventCollection.findOne({
-        eventId: data.eventID,
+        eventId: data.eventId,
         userEmail: data.userEmail
     });
 
@@ -154,6 +154,26 @@ app.post('/join-event', verifyToken, async (req, res) => {
     const result = await joinedEventCollection.insertOne(data);
     res.send(result);
 })
+
+app.delete('/leave-event', verifyToken, async (req, res) => {
+    const { eventId, userEmail } = req.body;
+
+    const result = await joinedEventCollection.deleteOne({
+        eventId: eventId,
+        userEmail: userEmail
+    });
+
+    if (result.deletedCount === 0) {
+        return res.status(404).send({
+            message: "Joined event not found"
+        });
+    }
+
+    res.send({
+        message: "Successfully left the event"
+    });
+});
+
 
 
 // Local development server
